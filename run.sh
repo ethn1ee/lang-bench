@@ -18,6 +18,7 @@ case $choice in
 
         javac blur/java/*.java
         java blur/java/RunBenchmark $kernel_size
+        rm -f blur/java/*.class
         ;;
     # 2)
     #     benchmark_type="fibonacci"
