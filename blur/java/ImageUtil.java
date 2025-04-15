@@ -110,7 +110,6 @@ class ImageUtil {
         try {
             File outputFile = new File(outputPath);
             ImageIO.write(bi, "jpg", outputFile);
-            System.out.println("Image saved to: " + outputPath);
         } catch (IOException e) {
             System.err.println("Error saving image: " + e.getMessage());
         }

@@ -111,9 +111,7 @@ class GaussianBlurBenchmark implements BlurBenchmark {
         double[][] blurred = verticalBlur(hBlurred);
         this.vEnd = System.currentTimeMillis();
 
-        System.out.println("\nBlur complete!");
-
-        String outputPath = ImageUtil.suffixPath(path, "gaussian");
+        String outputPath = "blur/output/java_gaussian.jpg";
         ImageUtil.saveImage(blurred, outputPath);
 
         long end = System.currentTimeMillis();
