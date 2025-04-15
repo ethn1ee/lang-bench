@@ -4,11 +4,6 @@ import java.util.Map;
 
 class RunBenchmark {
     public static void main(String[] args) {
-        if (args.length < 1) {
-            System.err.println("Usage: java RunBenchmark <kernelRadius>");
-            System.exit(1);
-        }
-
         int kernelRadius;
 
         try {
@@ -19,7 +14,7 @@ class RunBenchmark {
             return;
         }
 
-        BlurBenchmark gaussian = new GaussianBlurBenchmark(kernelRadius);
+        GaussianBlurBenchmark gaussian = new GaussianBlurBenchmark(kernelRadius);
         Map<String, Long> res = gaussian.blur("blur/sample.jpg");
         printResult(res);
     }

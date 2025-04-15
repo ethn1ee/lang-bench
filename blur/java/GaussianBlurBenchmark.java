@@ -65,7 +65,7 @@ class GaussianBlurBenchmark {
             }
             System.out.print("\rHorizontal blur: " + String.format("%.2f", 100.0 * y / paddedHeight) + "%");
         }
-        System.out.print("\r                                   ");
+        System.out.print("\r\033[K");
 
         return hBlurred;
     }
@@ -86,7 +86,7 @@ class GaussianBlurBenchmark {
             }
             System.out.print("\rVertical blur: " + String.format("%.2f", 100.0 * (x - padSize * 3) / width) + "%");
         }
-        System.out.print("\r                                   ");
+        System.out.print("\r\033[K");
 
         return blurred;
     }

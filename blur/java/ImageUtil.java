@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 
 class ImageUtil {
     public static int[][] loadImage(String path) {
-        // System.out.println("Loading image...");
+        System.out.print("Loading image...");
 
         int img[][] = null;
 
@@ -24,11 +24,13 @@ class ImageUtil {
             System.err.println(e);
         }
 
+        System.out.print("\r\033[K");
+
         return img;
     }
 
     public static double[][] padImage(int[][] img, int padSize) {
-        // System.out.println("Padding image...");
+        System.out.print("Padding image...");
 
         int height = img.length;
         int width = img[0].length;
@@ -68,6 +70,8 @@ class ImageUtil {
             }
         }
 
+        System.out.print("\r\033[K");
+
         return padded;
     }
 
@@ -81,7 +85,7 @@ class ImageUtil {
     }
 
     public static BufferedImage saveImage(double[][] img, String outputPath) {
-        // System.out.println("Saving image...");
+        System.out.print("Saving image...");
 
         int height = img.length;
         int width = img[0].length / 3;
@@ -113,6 +117,8 @@ class ImageUtil {
         } catch (IOException e) {
             System.err.println("Error saving image: " + e.getMessage());
         }
+
+        System.out.print("\r\033[K");
 
         return bi;
     }
