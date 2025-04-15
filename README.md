@@ -26,4 +26,4 @@ The Blur benchmark is a simple program that blurs an image using a Gaussian filt
 Upon selecting the blur option, you will be prompted to enter the following parameters:
 
 - **Kernel radius**
-    The radius of the Gaussian kernel used for blurring. A larger radius will result in a more blurred image, and will take longer.
+    The radius of the Gaussian kernel used for blurring. A larger radius will result in a more blurred image, and will take longer. A radius of 0 will result in no blur.
