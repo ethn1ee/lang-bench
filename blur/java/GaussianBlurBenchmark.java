@@ -3,7 +3,7 @@ package blur.java;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-class GaussianBlurBenchmark implements BlurBenchmark {
+class GaussianBlurBenchmark {
     int kernelRadius;
     int kernelSize;
     int width;
