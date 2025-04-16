@@ -28,9 +28,7 @@ read choice
 case $choice in
     1)
         echo -e "\033[32m=> SELECTED BLUR"
-
-        benchmark_type="blur"
-        path="benchmarks/$benchmark_type"
+        path="benchmarks/blur"
 
         # Kernel radius input
         echo
@@ -64,7 +62,11 @@ case $choice in
 
         # JavaScript
     2)
-        benchmark_type="fibonacci"
+        echo -e "\033[32m=> SELECTED FIBONACCI"
+        path="benchmarks/fibonacci"
+
+        echo
+        echo -e "\033[31mTHIS BENCHMARK IS NOT SUPPORTED YET.\033[0m"
         ;;
     *)
         echo -e "\033[31mINVALID CHOICE. EXCITING.\033[0m"
