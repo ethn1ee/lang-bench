@@ -29,10 +29,10 @@ case $choice in
 
         # Kernel radius input
         echo
-        echo -ne "\033[0mENTER KERNEL SIZE (e.g. 10, 50, 100): \033[33m"
-        read kernel_size
+        echo -ne "\033[0mENTER KERNEL RADIUS (e.g. 10, 50, 100): \033[33m"
+        read kernel_radius
 
-        if ! [[ "$kernel_size" =~ ^[0-9]+$ ]]; then
+        if ! [[ "$kernel_radius" =~ ^[0-9]+$ ]]; then
             echo -e "\033[31mERROR: KERNEL SIZE MUST BE A NONNEGATIVE INTEGER.\033[0m"
             exit 1
         fi
@@ -40,12 +40,13 @@ case $choice in
         # Java
         echo -e "\n$(make_separator "JAVA")\n"
         javac $path/java/*.java
-        java $path/java/RunBenchmark $kernel_size $path
+        java $path/java/RunBenchmark $kernel_radius $path
         rm -f $path/java/*.class
-        rm -f benchmarks/lib/java/*.class
+        rm -f lib/java/*.class
 
         # Python
         echo -e "\n$(make_separator "PYTHON")\n"
+        python3 -m benchmarks.blur.python.run_benchmark --kernel_radius=$kernel_radius --path=$path
         ;;
     2)
         benchmark_type="fibonacci"

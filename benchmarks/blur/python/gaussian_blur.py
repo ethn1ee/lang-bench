@@ -1,5 +1,7 @@
 from typing import Optional
 import math
+from lib.python.profiler import Profiler
+from benchmarks.blur.python.image_util import ImageUtil
 
 
 class GaussianBlur:
@@ -62,9 +64,10 @@ class GaussianBlur:
                 h_blurred[y][x + 1] = g
                 h_blurred[y][x + 2] = b
 
-            print(f"\rHorizontal blur: {100 * y / padded_height:.2f}%", end="")
+            print(
+                f"\rHorizontal blur: {100 * y / padded_height:.2f}%", end="", flush=True)
 
-        print("\r\033[k", end="")
+        print("\r\033[k", end="", flush=True)
 
         return h_blurred
 
@@ -86,21 +89,19 @@ class GaussianBlur:
 
         for x in range(pad_size * 3, padded_width - pad_size * 3):
             for y in range(pad_size, padded_height - pad_size):
-                c = 0
-
-                c += (self.kernel[i] * h_blurred[y - self.kernel_radius + i][x]
-                      for i in range(self.kernel_size))
+                c = sum(self.kernel[i] * h_blurred[y - self.kernel_radius + i][x]
+                        for i in range(self.kernel_size))
 
                 blurred[y - pad_size][x-pad_size * 3] = c
 
             print(
-                f"\rVertical blur: {100 * (x - pad_size * 3) / self.width:.2f}%", end="")
+                f"\rVertical blur: {100 * (x - pad_size * 3) / self.width:.2f}%", end="", flush=True)
 
-        print("\r\033[k", end="")
+        print("\r\033[k", end="", flush=True)
 
         return blurred
 
-    def blur(input_path: str, output_path: str) -> str:
+    def blur(self, input_path: str, output_path: str) -> str:
         """
         Performs Gaussian blur over the given image with given kernal radius. Using Gaussian blur's separability, this method runs horizontal blur first and applies vertical blur later, which is more efficient than applying a 2D Gaussian kernel.
 
@@ -110,4 +111,29 @@ class GaussianBlur:
         Returns:
             A table (string) of memory used and elapsed time for horizontal blur, vertical blur, and total time elapsed
         """
-        
+
+        profiler = Profiler()
+        profiler.start("Total")
+
+        pad_size = self.kernel_radius
+        self._create_kernel()
+
+        img = ImageUtil.load_image(input_path)
+        padded = ImageUtil.pad_image(img, pad_size)
+
+        self.height = len(img)
+        self.width = len(img[0])
+
+        profiler.start("Horizontal blur")
+        h_blurred = self._horizontal_blur(padded)
+        profiler.end("Horizontal blur")
+
+        profiler.start("Vertical blur")
+        blurred = self._vertical_blur(h_blurred)
+        profiler.end("Vertical blur")
+
+        ImageUtil.save_image(blurred, output_path)
+
+        profiler.end("Total")
+
+        return profiler.get_table()

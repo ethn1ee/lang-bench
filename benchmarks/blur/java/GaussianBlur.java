@@ -118,8 +118,8 @@ class GaussianBlur {
         Profiler profiler = new Profiler();
         profiler.start("Total");
 
-        int padSize = kernelRadius;
-        createKernel();
+        int padSize = this.kernelRadius;
+        this.createKernel();
 
         int[][] img = ImageUtil.loadImage(inputPath);
         double[][] padded = ImageUtil.padImage(img, padSize);
@@ -128,11 +128,11 @@ class GaussianBlur {
         this.width = img[0].length;
 
         profiler.start("Horizontal Blur");
-        double[][] hBlurred = horizontalBlur(padded);
+        double[][] hBlurred = this.horizontalBlur(padded);
         profiler.end("Horizontal Blur");
 
         profiler.start("Vertical Blur");
-        double[][] blurred = verticalBlur(hBlurred);
+        double[][] blurred = this.verticalBlur(hBlurred);
         profiler.end("Vertical Blur");
 
         ImageUtil.saveImage(blurred, outputPath);

@@ -53,10 +53,19 @@ public class Profiler {
         sb.append(String.format("%-20s | %-20s | %-20s\n", "Stage", "Memory (KB)", "Time (s)"));
         sb.append("---------------------|----------------------|---------------------\n");
 
+        String totalRow = null;
         for (Map.Entry<String, Process> entry : processes.entrySet()) {
             Process current = entry.getValue();
-            sb.append(String.format("%-20s | %-20.3f | %-20.3f\n", entry.getKey(), current.getMemoryUsed(),
-                    current.getTimeElapsed()));
+            String row = String.format("%-20s | %-20.3f | %-20.3f\n", entry.getKey(), current.getMemoryUsed(),
+                    current.getTimeElapsed());
+            if ("Total".equals(entry.getKey())) {
+                totalRow = row;
+            } else {
+                sb.append(row);
+            }
+        }
+        if (totalRow != null) {
+            sb.append(totalRow);
         }
 
         if (sb.length() > 0 && sb.charAt(sb.length() - 1) == '\n') {

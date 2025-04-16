@@ -1,6 +1,6 @@
 from PIL import Image
 import numpy as np
-from matrix_util import MatrixUtil
+from benchmarks.blur.python.matrix_util import MatrixUtil
 
 
 class ImageUtil:

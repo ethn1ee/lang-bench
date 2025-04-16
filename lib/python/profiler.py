@@ -33,7 +33,7 @@ class _Process:
         if self.end_time == -1:
             raise ValueError("The process has not ended!")
 
-        return (self.end_time - self.start_time) / 1000
+        return self.end_time - self.start_time
 
 
 class Profiler:
@@ -41,8 +41,8 @@ class Profiler:
 
     @staticmethod
     def _get_memory():
-        process = psutil.Process(os.getpid())
-        return process.memory_info().rss
+        mem = psutil.virtual_memory()
+        return mem.total - mem.available
 
     @classmethod
     def create_process(cls, id: str) -> _Process:
@@ -51,10 +51,10 @@ class Profiler:
 
     @classmethod
     def start(cls, id: str):
-        current = cls.create_process(id)        
+        current = cls.create_process(id)
         gc.collect()
         current.start_memory = cls._get_memory()
-        current.start_time = int(time.time() * 1000)
+        current.start_time = time.time()
 
     @classmethod
     def end(cls, id: str):
@@ -63,18 +63,29 @@ class Profiler:
         current = cls._processes[id]
         gc.collect()
         current.end_memory = cls._get_memory()
-        current.end_time = int(time.time() * 1000)
+        current.end_time = time.time()
 
     @classmethod
     def get_table(cls):
         sb = []
         sb.append(f"{'Stage':<20} | {'Memory (KB)':<20} | {'Time (s)':<20}")
         sb.append("-" * 21 + "|" + "-" * 22 + "|" + "-" * 21)
+
+        total_row = None
         for key, proc in cls._processes.items():
             try:
                 mem = proc.get_memory_used()
                 t = proc.get_time_elapsed()
-                sb.append(f"{key:<20} | {mem:<20.3f} | {t:<20.3f}")
+                row = f"{key:<20} | {mem:<20.3f} | {t:<20.3f}"
+
+                if key == "Total":
+                    total_row = row
+                else:
+                    sb.append(row)
             except Exception as e:
                 sb.append(f"{key:<20} | ERROR: {e}")
+        
+        if total_row:
+            sb.append(total_row)
+    
         return "\n".join(sb)
