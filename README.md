@@ -34,7 +34,7 @@ Then you will be prompted with a menu to select the benchmark you want to run. Y
 
 ### 1. Blur
 
-The Blur benchmark is a simple program that blurs an image using a Gaussian filter. The benchmark measures the time taken to process the image and the memory usage during the operation. The Gaussian blur is performed using its separability, which allows the 2D convolution to be performed as two 1D convolutions (horizontal and vertical).
+The Blur benchmark is a simple program that blurs an image using a Gaussian filter. The benchmark measures the time taken to process the image and the memory usage during the operation. The Gaussian blur is performed using its separability, which allows the 2D convolution to be performed as two 1D convolutions (horizontal and vertical). By default, the benchmark uses the image at `benchmarks/blur/input.jpg`, but you can replace it with any JPEG image of your choice. The benchmark will save the blurred image in `benchmarks/blur/output/<language>_gaussian.jpg`.
 
 #### Parameters
 
