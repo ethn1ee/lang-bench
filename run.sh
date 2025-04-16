@@ -43,19 +43,19 @@ case $choice in
         fi
 
         # Java
+        make_separator "JAVA"
         if command -v javac >/dev/null 2>&1 && command -v java >/dev/null 2>&1; then
-            make_separator "JAVA"
             javac $path/java/*.java
             java $path/java/RunBenchmark $kernel_radius $path
-            rm -f $path/java/*.class
+            rm -f $path/java/*.class # remove compiled classes
             rm -f lib/java/*.class
         else
             alert_language_not_installed "JAVA"
         fi
 
         # Python
+        make_separator "PYTHON"
         if command -v python3 > /dev/null 2>&1; then
-            make_separator "PYTHON"
             python3 -m benchmarks.blur.python.run_benchmark --kernel_radius=$kernel_radius --path=$path
         else
             alert_language_not_installed "PYTHON"
