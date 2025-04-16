@@ -13,13 +13,25 @@ public class Profiler {
         return processes.get(id);
     }
 
+    /**
+     * Creates a new process with the given unique ID.
+     * 
+     * @param id ID of the new process. Has to be unique.
+     */
     public void start(String id) {
+        if (processes.containsKey(id))
+            throw new IllegalArgumentException("The ID " + id + " already exists.");
         Process current = createProcess(id);
         runtime.gc();
         current.startMemory = runtime.totalMemory() - runtime.freeMemory();
         current.startTime = System.currentTimeMillis();
     }
 
+    /**
+     * Ends the process with the given ID.
+     * 
+     * @param id ID of the new process. Has to exist among the running processes.
+     */
     public void end(String id) {
         if (!processes.containsKey(id))
             throw new IllegalArgumentException("No process found with id: " + id);
@@ -30,6 +42,11 @@ public class Profiler {
         current.endTime = System.currentTimeMillis();
     }
 
+    /**
+     * Formats the performance of all processes into a table.
+     * 
+     * @return String of the table
+     */
     public String getTable() {
         StringBuilder sb = new StringBuilder();
 
@@ -56,6 +73,10 @@ class Process {
     public long startTime = -1;
     public long endTime = -1;
 
+    /**
+     * @return the memory used by the process with the given ID
+     * @throws IllegalArgumentException if the processes has not ended
+     */
     public double getMemoryUsed() {
         if (this.endMemory == -1)
             throw new IllegalArgumentException("The process has not ended!");
@@ -63,6 +84,10 @@ class Process {
         return (this.endMemory - this.startMemory) / 1000.0;
     }
 
+    /**
+     * @return the time taken by the process with the given ID
+     * @throws IllegalArgumentException if the process has not ended
+     */
     public double getTimeElapsed() {
         if (this.endTime == -1)
             throw new IllegalArgumentException("The process has not ended!");

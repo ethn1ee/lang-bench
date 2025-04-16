@@ -1,22 +1,18 @@
 package benchmarks.blur.java;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import lib.java.Profiler;
 
 class GaussianBlur {
     int kernelRadius;
     int kernelSize;
-    int width;
-    int height;
     double[] kernel;
 
-    Map<String, Double> performance;
+    int width;
+    int height;
 
     public GaussianBlur(int kernelRadius) {
         this.kernelRadius = kernelRadius;
         this.kernelSize = 2 * kernelRadius + 1;
-        this.performance = new LinkedHashMap<>();
     }
 
     /**
@@ -25,15 +21,13 @@ class GaussianBlur {
      * @return A 1D double array of the kernel
      */
     private double[] createKernel() {
-        double[] kernel = new double[kernelSize];
-        double std = kernelSize / 6.0;
+        this.kernel = new double[kernelSize];
+        double std = this.kernelSize / 6.0;
 
         for (int i = 0; i < kernelSize; i++) {
-            int xFromCenter = i - kernelRadius;
+            int xFromCenter = i - this.kernelRadius;
             kernel[i] = 1 / (Math.sqrt(2 * Math.PI) * std) * Math.exp(-(xFromCenter * xFromCenter) / (2 * std * std));
         }
-
-        this.kernel = kernel;
 
         return kernel;
     }
@@ -42,12 +36,13 @@ class GaussianBlur {
      * Apply blur horizontally
      * 
      * @param padded Padded image
-     * @return Resulting image array after blurring
+     * @return Resulting image array after blurring horizontally
      */
     private double[][] horizontalBlur(double[][] padded) {
-        int padSize = kernelRadius;
-        int paddedWidth = width + 2 * padSize * 3;
-        int paddedHeight = height + 2 * padSize;
+        int padSize = this.kernelRadius;
+        int paddedHeight = padded.length;
+        int paddedWidth = padded[0].length;
+
         double[][] hBlurred = new double[paddedHeight][paddedWidth];
 
         // Clone padded first to preserve paddings
@@ -58,13 +53,13 @@ class GaussianBlur {
         }
 
         for (int y = 0; y < paddedHeight; y++) {
-            for (int x = padSize * 3; x < width + padSize * 3; x += 3) {
+            for (int x = padSize * 3; x < paddedWidth - padSize * 3; x += 3) {
                 double r = 0, g = 0, b = 0;
 
-                for (int i = 0; i < kernelSize; i++) {
-                    r += kernel[i] * padded[y][x - kernelRadius * 3 + i * 3];
-                    g += kernel[i] * padded[y][x - kernelRadius * 3 + i * 3 + 1];
-                    b += kernel[i] * padded[y][x - kernelRadius * 3 + i * 3 + 2];
+                for (int i = 0; i < this.kernelSize; i++) {
+                    r += this.kernel[i] * padded[y][x - this.kernelRadius * 3 + i * 3];
+                    g += this.kernel[i] * padded[y][x - this.kernelRadius * 3 + i * 3 + 1];
+                    b += this.kernel[i] * padded[y][x - this.kernelRadius * 3 + i * 3 + 2];
                 }
 
                 hBlurred[y][x] = r;
@@ -81,24 +76,27 @@ class GaussianBlur {
     /**
      * Apply blur vertically
      * 
-     * @param hBlurred Horizontally blurred image (should run horizontalBlur first)
+     * @param hBlurred Horizontally blurred image (therefore should run horizontalBlur first)
      * @return Resulting image array after blurring
      */
     private double[][] verticalBlur(double[][] hBlurred) {
-        int padSize = kernelRadius;
+        int padSize = this.kernelRadius;
+        int paddedHeight = hBlurred.length;
+        int paddedWidth = hBlurred[0].length;
+
         double[][] blurred = new double[height][width]; // same size and type as original image
 
-        for (int x = padSize * 3; x < width + padSize * 3; x++) {
-            for (int y = padSize; y < padSize + height; y++) {
+        for (int x = padSize * 3; x < paddedWidth - padSize * 3; x++) {
+            for (int y = padSize; y < paddedHeight - padSize; y++) {
                 double c = 0;
 
-                for (int i = 0; i < kernelSize; i++) {
-                    c += kernel[i] * hBlurred[y - kernelRadius + i][x];
+                for (int i = 0; i < this.kernelSize; i++) {
+                    c += this.kernel[i] * hBlurred[y - this.kernelRadius + i][x];
                 }
 
                 blurred[y - padSize][x - padSize * 3] = c;
             }
-            System.out.print("\rVertical blur: " + String.format("%.2f", 100.0 * (x - padSize * 3) / width) + "%");
+            System.out.print("\rVertical blur: " + String.format("%.2f", 100.0 * (x - padSize * 3) / this.width) + "%");
         }
         System.out.print("\r\033[K");
 
@@ -108,21 +106,21 @@ class GaussianBlur {
     /**
      * Performs Gaussian blur over the given image with given kernal radius. Using
      * Gaussian blur's separability, this method runs horizontal blur first and
-     * applices vertical blur later, which is more efficient that applying a 2D
-     * gaussian kernel.
+     * applices vertical blur later, which is more efficient thab applying a 2D
+     * Gaussian kernel.
      * 
-     * @param path Path to the input image, relative from root
-     * @return A dictionary of elapsed time for horizontal blur, vertical blur, and
+     * @param inputPath Path to the input image relative to root
+     * @param outputPath Desired path of the output image relative to root
+     * @return A table (string) of memory used and elapsed time for horizontal blur, vertical blur, and
      *         total time elapsed
      */
-    public String blur(String path) {
+    public String blur(String inputPath, String outputPath) {
         Profiler profiler = new Profiler();
         profiler.start("Total");
 
         int padSize = kernelRadius;
         createKernel();
 
-        String inputPath = path + "/input.jpg";
         int[][] img = ImageUtil.loadImage(inputPath);
         double[][] padded = ImageUtil.padImage(img, padSize);
 
@@ -137,7 +135,6 @@ class GaussianBlur {
         double[][] blurred = verticalBlur(hBlurred);
         profiler.end("Vertical Blur");
 
-        String outputPath = path + "/output/java_gaussian.jpg";
         ImageUtil.saveImage(blurred, outputPath);
 
         profiler.end("Total");

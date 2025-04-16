@@ -84,6 +84,7 @@ class ImageUtil:
 
         return padded
 
+    @staticmethod
     def save_image(img: list[list[float]], output_path: str):
         """
         Convert 2D float array into a jpg image
