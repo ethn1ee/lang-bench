@@ -1,5 +1,5 @@
-import time
 import os
+import time
 import psutil
 import gc
 
@@ -41,8 +41,8 @@ class Profiler:
 
     @staticmethod
     def _get_memory():
-        mem = psutil.virtual_memory()
-        return mem.total - mem.available
+        process = psutil.Process(os.getpid())
+        return process.memory_info().rss
 
     @classmethod
     def create_process(cls, id: str) -> _Process:
@@ -84,8 +84,8 @@ class Profiler:
                     sb.append(row)
             except Exception as e:
                 sb.append(f"{key:<20} | ERROR: {e}")
-        
+
         if total_row:
             sb.append(total_row)
-    
+
         return "\n".join(sb)
