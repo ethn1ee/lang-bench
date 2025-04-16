@@ -34,14 +34,14 @@ Then you will be prompted with a menu to select the benchmark you want to run. Y
 
 ### 1. Blur
 
-The Blur benchmark is a simple program that blurs an image using a Gaussian filter. The benchmark measures the time taken to process the image and the memory usage during the operation.
+The Blur benchmark is a simple program that blurs an image using a Gaussian filter. The benchmark measures the time taken to process the image and the memory usage during the operation. The Gaussian blur is performed using its separability, which allows the 2D convolution to be performed as two 1D convolutions (horizontal and vertical).
 
 #### Parameters
 
 Upon selecting the blur option, you will be prompted to enter the following parameters:
 
 - **Kernel radius**
-    The radius of the Gaussian kernel used for blurring. A larger radius will result in a more blurred image, and will take longer. A radius of 0 will result in no blur.
+    The radius of the Gaussian kernel used for blurring, equivalent to blur intensity. A larger radius will result in a more blurred image, and will take longer. A radius of 0 will result in no blur.
 
 ### 2. Fibonacci
 

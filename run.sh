@@ -7,7 +7,12 @@ make_separator() {
     local label_len=${#label}
     local sep_len=$((width - label_len - 1))
     if (( sep_len < 0 )); then sep_len=0; fi
-    printf "\033[90m%s %s\033[0m" "$label" "$(printf '%*s' "$sep_len" | tr ' ' "$sep")"
+    printf "\n\033[90m%s %s \n\033[0m" "$label" "$(printf '%*s' "$sep_len" | tr ' ' "$sep")"
+}
+
+alert_language_not_installed() {
+    local language="$1"
+    echo -e "\033[31m$language NOT INSTALLED. SKIPPING $language BENCHMARK.\033[0m"
 }
 
 # Benchmark selector
@@ -38,16 +43,26 @@ case $choice in
         fi
 
         # Java
-        echo -e "\n$(make_separator "JAVA")\n"
-        javac $path/java/*.java
-        java $path/java/RunBenchmark $kernel_radius $path
-        rm -f $path/java/*.class
-        rm -f lib/java/*.class
+        if command -v javac >/dev/null 2>&1 && command -v java >/dev/null 2>&1; then
+            make_separator "JAVA"
+            javac $path/java/*.java
+            java $path/java/RunBenchmark $kernel_radius $path
+            rm -f $path/java/*.class
+            rm -f lib/java/*.class
+        else
+            alert_language_not_installed "JAVA"
+        fi
 
         # Python
-        echo -e "\n$(make_separator "PYTHON")\n"
-        python3 -m benchmarks.blur.python.run_benchmark --kernel_radius=$kernel_radius --path=$path
+        if command -v python3 > /dev/null 2>&1; then
+            make_separator "PYTHON"
+            python3 -m benchmarks.blur.python.run_benchmark --kernel_radius=$kernel_radius --path=$path
+        else
+            alert_language_not_installed "PYTHON"
+        fi
         ;;
+
+        # JavaScript
     2)
         benchmark_type="fibonacci"
         ;;
