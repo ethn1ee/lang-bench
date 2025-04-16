@@ -42,6 +42,10 @@ public class Profiler {
                     current.getTimeElapsed()));
         }
 
+        if (sb.length() > 0 && sb.charAt(sb.length() - 1) == '\n') {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
         return sb.toString();
     }
 }

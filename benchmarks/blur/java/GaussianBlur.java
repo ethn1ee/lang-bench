@@ -117,6 +117,7 @@ class GaussianBlur {
      */
     public String blur(String path) {
         Profiler profiler = new Profiler();
+        profiler.start("Total");
 
         int padSize = kernelRadius;
         createKernel();
@@ -138,6 +139,8 @@ class GaussianBlur {
 
         String outputPath = path + "/output/java_gaussian.jpg";
         ImageUtil.saveImage(blurred, outputPath);
+
+        profiler.end("Total");
 
         return profiler.getTable();
     }
