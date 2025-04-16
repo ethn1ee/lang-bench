@@ -1,4 +1,4 @@
-package blur.java;
+package benchmarks.blur.java;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
@@ -7,6 +7,13 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 class ImageUtil {
+    /**
+     * Returns a 2D integer array extracted from the given image
+     * 
+     * @param path Path to image, relative from the root
+     * @return 2D integer array with each pixel represented with 3 numbers for RGB
+     *         channels
+     */
     public static int[][] loadImage(String path) {
         System.out.print("Loading image...");
 
@@ -29,6 +36,14 @@ class ImageUtil {
         return img;
     }
 
+    /**
+     * Add reflection padding to image and also convert into a 2D double array
+     * 
+     * @param img     2D integer array of an image
+     * @param padSize Desired size of the padding
+     * @return Padded image converted to a 2D double array with width and height
+     *         increased by 2 * padSize
+     */
     public static double[][] padImage(int[][] img, int padSize) {
         System.out.print("Padding image...");
 
@@ -36,12 +51,13 @@ class ImageUtil {
         int width = img[0].length;
         int paddedWidth = width + 2 * padSize * 3;
         int paddedHeight = height + 2 * padSize;
+
         double[][] padded = new double[paddedHeight][paddedWidth];
 
         // Copy original image to center
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                padded[y + padSize][x + padSize * 3] = img[y][x];
+                padded[padSize + y][padSize * 3 + x] = img[y][x];
             }
         }
 
@@ -49,9 +65,9 @@ class ImageUtil {
         for (int y = 0; y < padSize; y++) {
             for (int x = 0; x < width; x++) {
                 // Top padding
-                padded[y][x + padSize * 3] = img[padSize - y][x];
+                padded[y][padSize * 3 + x] = img[padSize - y][x];
                 // Bottom padding
-                padded[y + height + padSize][x + padSize * 3] = img[height - 1 - y][x];
+                padded[padSize + height + y][padSize * 3 + x] = img[height - 1 - y][x];
             }
         }
 
@@ -64,7 +80,7 @@ class ImageUtil {
                 padded[y][x + 2] = padded[y][(padSize + padSize) * 3 - x + 2];
 
                 // Right padding
-                padded[y][x + width + padSize * 3] = padded[y][width + (padSize) * 3 - x - 3];
+                padded[y][x + width + padSize * 3] = padded[y][width + padSize * 3 - x - 3];
                 padded[y][x + width + padSize * 3 + 1] = padded[y][width + padSize * 3 - x - 2];
                 padded[y][x + width + padSize * 3 + 2] = padded[y][width + padSize * 3 - x - 1];
             }
@@ -75,16 +91,13 @@ class ImageUtil {
         return padded;
     }
 
-    public static String suffixPath(String path, String suffix) {
-        int lastDotIndex = path.lastIndexOf('.');
-        if (lastDotIndex == -1) {
-            return path + suffix;
-        }
-
-        return path.substring(0, lastDotIndex) + "_" + suffix + path.substring(lastDotIndex);
-    }
-
-    public static BufferedImage saveImage(double[][] img, String outputPath) {
+    /**
+     * Convert 2D double array into a jpg image
+     * 
+     * @param img        2D double array of an image
+     * @param outputPath Desired path of the output jpg file
+     */
+    public static void saveImage(double[][] img, String outputPath) {
         System.out.print("Saving image...");
 
         int height = img.length;
@@ -119,7 +132,5 @@ class ImageUtil {
         }
 
         System.out.print("\r\033[K");
-
-        return bi;
     }
 }

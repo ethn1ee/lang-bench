@@ -12,6 +12,7 @@ read choice
 case $choice in
     1)
         benchmark_type="blur"
+        path="benchmarks/$benchmark_type"
 
         echo
         echo -ne "\033[0mENTER KERNEL SIZE (e.g. 10, 50, 100): \033[33m"
@@ -24,9 +25,9 @@ case $choice in
         fi
 
         echo -e "\033[90mJAVA ===================================\033[0m\n"
-        javac blur/java/*.java
-        java blur/java/RunBenchmark $kernel_size
-        rm -f blur/java/*.class
+        javac $path/java/*.java
+        java $path/java/RunBenchmark $kernel_size $path
+        rm -f $path/java/*.class
         echo
 
         echo -e "\033[90mPYTHON =================================\033[0m\n"
@@ -35,7 +36,7 @@ case $choice in
     #     benchmark_type="fibonacci"
     #     ;;
     *)
-        echo -e "\033[32mINVALID CHOICE. EXCITING.\033[0m"
+        echo -e "\033[31mINVALID CHOICE. EXCITING.\033[0m"
         exit 1
         ;;
 esac

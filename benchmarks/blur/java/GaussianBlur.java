@@ -1,27 +1,29 @@
-package blur.java;
+package benchmarks.blur.java;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import lib.java.Profiler;
 
-class GaussianBlurBenchmark {
+class GaussianBlur {
     int kernelRadius;
     int kernelSize;
     int width;
     int height;
     double[] kernel;
 
-    long start;
-    long end;
-    long hStart;
-    long hEnd;
-    long vStart;
-    long vEnd;
+    Map<String, Double> performance;
 
-    public GaussianBlurBenchmark(int kernelRadius) {
+    public GaussianBlur(int kernelRadius) {
         this.kernelRadius = kernelRadius;
         this.kernelSize = 2 * kernelRadius + 1;
+        this.performance = new LinkedHashMap<>();
     }
 
+    /**
+     * Create a 1D Gaussian kernel with kernelRadius
+     * 
+     * @return A 1D double array of the kernel
+     */
     private double[] createKernel() {
         double[] kernel = new double[kernelSize];
         double std = kernelSize / 6.0;
@@ -36,6 +38,12 @@ class GaussianBlurBenchmark {
         return kernel;
     }
 
+    /**
+     * Apply blur horizontally
+     * 
+     * @param padded Padded image
+     * @return Resulting image array after blurring
+     */
     private double[][] horizontalBlur(double[][] padded) {
         int padSize = kernelRadius;
         int paddedWidth = width + 2 * padSize * 3;
@@ -70,6 +78,12 @@ class GaussianBlurBenchmark {
         return hBlurred;
     }
 
+    /**
+     * Apply blur vertically
+     * 
+     * @param hBlurred Horizontally blurred image (should run horizontalBlur first)
+     * @return Resulting image array after blurring
+     */
     private double[][] verticalBlur(double[][] hBlurred) {
         int padSize = kernelRadius;
         double[][] blurred = new double[height][width]; // same size and type as original image
@@ -91,36 +105,41 @@ class GaussianBlurBenchmark {
         return blurred;
     }
 
-    public Map<String, Long> blur(String path) {
-        long start = System.currentTimeMillis();
+    /**
+     * Performs Gaussian blur over the given image with given kernal radius. Using
+     * Gaussian blur's separability, this method runs horizontal blur first and
+     * applices vertical blur later, which is more efficient that applying a 2D
+     * gaussian kernel.
+     * 
+     * @param path Path to the input image, relative from root
+     * @return A dictionary of elapsed time for horizontal blur, vertical blur, and
+     *         total time elapsed
+     */
+    public String blur(String path) {
+        Profiler profiler = new Profiler();
 
         int padSize = kernelRadius;
         createKernel();
 
-        int[][] img = ImageUtil.loadImage(path);
+        String inputPath = path + "/input.jpg";
+        int[][] img = ImageUtil.loadImage(inputPath);
         double[][] padded = ImageUtil.padImage(img, padSize);
 
         this.height = img.length;
         this.width = img[0].length;
 
-        this.hStart = System.currentTimeMillis();
+        profiler.start("Horizontal Blur");
         double[][] hBlurred = horizontalBlur(padded);
-        this.hEnd = System.currentTimeMillis();
+        profiler.end("Horizontal Blur");
 
-        this.vStart = System.currentTimeMillis();
+        profiler.start("Vertical Blur");
         double[][] blurred = verticalBlur(hBlurred);
-        this.vEnd = System.currentTimeMillis();
+        profiler.end("Vertical Blur");
 
-        String outputPath = "blur/output/java_gaussian.jpg";
+        String outputPath = path + "/output/java_gaussian.jpg";
         ImageUtil.saveImage(blurred, outputPath);
 
-        long end = System.currentTimeMillis();
-
-        Map<String, Long> result = new LinkedHashMap<>();
-        result.put("Horizontal Blur", hEnd - hStart);
-        result.put("Vertical Blur", vEnd - vStart);
-        result.put("Total", end - start);
-        return result;
+        return profiler.getTable();
     }
 
 }

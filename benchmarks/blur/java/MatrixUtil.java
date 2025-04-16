@@ -1,6 +1,12 @@
-package blur.java;
+package benchmarks.blur.java;
 
 class MatrixUtil {
+    /**
+     * Flattens a 2D array into a 1D array.
+     * 
+     * @param arr 2D integer array
+     * @return Flattened array
+     */
     public static int[] flattenArray(int[][] arr) {
         if (arr.length == 0)
             throw new IllegalArgumentException("Array cannot be empty!");
@@ -19,9 +25,19 @@ class MatrixUtil {
         return flattened;
     }
 
+    /**
+     * Unflattens a 1D array into a 2D array with the given dimension.
+     * 
+     * @param arr    1D integer array to unflatten
+     * @param width  Desired width of the 2D array
+     * @param height Desired height of the 2D array
+     * @return Unflattened array with the given dimensions
+     * @throws IllegalArgumentException If the given dimensions do not match the
+     *                                  array length
+     */
     public static int[][] unflattenArray(int[] arr, int width, int height) {
         if (arr.length != width * height)
-            throw new IllegalArgumentException("Given dimension does not match the array!");
+            throw new IllegalArgumentException("Given dimensions do not match the array!");
 
         int[][] unflattened = new int[height][width];
 
@@ -34,17 +50,4 @@ class MatrixUtil {
         return unflattened;
     }
 
-    public static double[][] transpose(double[][] mat) {
-        int rows = mat.length;
-        int cols = mat[0].length;
-        double[][] transposed = new double[cols][rows];
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                transposed[j][i] = mat[i][j];
-            }
-        }
-
-        return transposed;
-    }
 }
